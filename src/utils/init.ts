@@ -5,11 +5,11 @@ import zh from '../constants/zh.js';
 
 export const initLang = () => {
     i18n.use(initReactI18next).init({
-        lng: 'en',
-        fallbackLng: 'en',
+        lng: 'cn',
+        fallbackLng: 'cn',
         resources: {
             en: { translation: en },
-            zhCN: { translation: zh },
+            cn: { translation: zh },
         },
     });
 }

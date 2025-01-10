@@ -14,6 +14,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as LayoutImport } from './routes/_layout'
+import { Route as LayoutBlogImport } from './routes/_layout.blog'
 
 // Create Virtual Routes
 
@@ -32,6 +33,12 @@ const LayoutIndexLazyRoute = LayoutIndexLazyImport.update({
   getParentRoute: () => LayoutRoute,
 } as any).lazy(() => import('./routes/_layout.index.lazy').then((d) => d.Route))
 
+const LayoutBlogRoute = LayoutBlogImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -42,6 +49,13 @@ declare module '@tanstack/react-router' {
       fullPath: ''
       preLoaderRoute: typeof LayoutImport
       parentRoute: typeof rootRoute
+    }
+    '/_layout/blog': {
+      id: '/_layout/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof LayoutBlogImport
+      parentRoute: typeof LayoutImport
     }
     '/_layout/': {
       id: '/_layout/'
@@ -56,10 +70,12 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface LayoutRouteChildren {
+  LayoutBlogRoute: typeof LayoutBlogRoute
   LayoutIndexLazyRoute: typeof LayoutIndexLazyRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
+  LayoutBlogRoute: LayoutBlogRoute,
   LayoutIndexLazyRoute: LayoutIndexLazyRoute,
 }
 
@@ -68,25 +84,28 @@ const LayoutRouteWithChildren =
 
 export interface FileRoutesByFullPath {
   '': typeof LayoutRouteWithChildren
+  '/blog': typeof LayoutBlogRoute
   '/': typeof LayoutIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
+  '/blog': typeof LayoutBlogRoute
   '/': typeof LayoutIndexLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_layout': typeof LayoutRouteWithChildren
+  '/_layout/blog': typeof LayoutBlogRoute
   '/_layout/': typeof LayoutIndexLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/'
+  fullPaths: '' | '/blog' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/_layout' | '/_layout/'
+  to: '/blog' | '/'
+  id: '__root__' | '/_layout' | '/_layout/blog' | '/_layout/'
   fileRoutesById: FileRoutesById
 }
 
@@ -114,8 +133,13 @@ export const routeTree = rootRoute
     "/_layout": {
       "filePath": "_layout.tsx",
       "children": [
+        "/_layout/blog",
         "/_layout/"
       ]
+    },
+    "/_layout/blog": {
+      "filePath": "_layout.blog.tsx",
+      "parent": "/_layout"
     },
     "/_layout/": {
       "filePath": "_layout.index.lazy.tsx",
